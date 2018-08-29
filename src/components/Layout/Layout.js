@@ -1,5 +1,5 @@
 import React from 'react';
-import Aux from '../../hoc/Auxy';
+import Auxy from '../../hoc/Auxy';
 
 const layout = (props) => (
     <Auxy>
