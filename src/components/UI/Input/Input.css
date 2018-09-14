@@ -17,9 +17,22 @@
     background-color: #fff;
     font: inherit;
     padding: 6px 10px;
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .InputElement:focus {
     outline: none;
-    background-color: #ccc;
+    background-color: #eee;
+}
+
+.Invalid {
+    border: 1px solid red;
+}
+
+.Invalid:focus,
+.Invalid:active {
+    background-color: white;
+    box-shadow: 0px 0px 3px red;
 }

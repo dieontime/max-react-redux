@@ -3,32 +3,18 @@ import CheckoutSummary from '../../components/Order/CheckoutSummary/CheckoutSumm
 import Spinner from '../../components/UI/Spinner/Spinner';
 import ContactData from './ContactData/ContactData';
 import { Route } from 'react-router-dom';
-
+import { connect } from 'react-redux';
 class Checkout extends Component {
-    state = {
-        ingredients: null,
-        price: 0
-    };
 
-    componentDidMount() {
-        const stateParam = this.props.history.location.state
-        this.setState({
-            ingredients: stateParam.ingredients,
-            price: stateParam.price
-        });
-    }
     cancelCheckoutHandler = () => {
         this.props.history.goBack();
     }
     continueCheckoutHandler = () => {
-        this.props.history.push('/checkout/contact-data', {
-            ingredients: this.state.ingredients,
-            price: this.state.price
-        });
+        this.props.history.push('/checkout/contact-data');
     }
     render() {
-        const checkout = this.state.ingredients ? <CheckoutSummary
-            ingredients={this.state.ingredients}
+        const checkout = this.props.ingredients ? <CheckoutSummary
+            ingredients={this.props.ingredients}
             cancelCheckout={this.cancelCheckoutHandler}
             continueCheckout={this.continueCheckoutHandler}></CheckoutSummary>
             : <Spinner />
@@ -40,5 +26,10 @@ class Checkout extends Component {
         );
     }
 }
-
-export default Checkout;
+const mapStateToProps = (state) => {
+    return {
+        ingredients: state.ingredients,
+        price: state.totalPrice
+    }
+}
+export default connect(mapStateToProps)(Checkout);
