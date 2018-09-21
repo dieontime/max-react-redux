@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import CheckoutSummary from '../../components/Order/CheckoutSummary/CheckoutSummary';
-import Spinner from '../../components/UI/Spinner/Spinner';
 import ContactData from './ContactData/ContactData';
-import { Route } from 'react-router-dom';
+import { Route, Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
+
 class Checkout extends Component {
 
     cancelCheckoutHandler = () => {
@@ -13,23 +13,32 @@ class Checkout extends Component {
         this.props.history.push('/checkout/contact-data');
     }
     render() {
-        const checkout = this.props.ingredients ? <CheckoutSummary
-            ingredients={this.props.ingredients}
-            cancelCheckout={this.cancelCheckoutHandler}
-            continueCheckout={this.continueCheckoutHandler}></CheckoutSummary>
-            : <Spinner />
-        return (
-            <div>
-                {checkout}
-                <Route path={this.props.match.path + '/contact-data'} component={ContactData} />
-            </div>
-        );
+        let summary = <Redirect to="/" />
+        if (this.props.ingredients) {
+            const purchasedRedirect = this.props.purchased ? <Redirect to="/" /> : null;
+            summary = (
+                <div>
+                    {purchasedRedirect}
+                    <CheckoutSummary
+                        ingredients={this.props.ingredients}
+                        cancelCheckout={this.cancelCheckoutHandler}
+                        continueCheckout={this.continueCheckoutHandler} />
+                    <Route
+                        path={this.props.match.path + '/contact-data'}
+                        component={ContactData} />
+                </div>
+            );
+        }
+        return summary;
     }
+
 }
+
 const mapStateToProps = (state) => {
     return {
-        ingredients: state.ingredients,
-        price: state.totalPrice
+        ingredients: state.burgerBuilder.ingredients,
+        purchased: state.order.purchased
     }
 }
+
 export default connect(mapStateToProps)(Checkout);

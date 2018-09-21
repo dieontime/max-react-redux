@@ -2,29 +2,21 @@ import React, { Component } from 'react';
 import Auxy from '../../hoc/Auxy'
 import Burger from '../../components/Burger/Burger';
 import BurgerControls from '../../components/Burger/BurgerControls/BurgerControls';
+import axios from '../../axios-orders';
 import Modal from '../../components/UI/Modal/Modal';
 import OrderSummary from '../../components/Burger/OrderSummary/OrderSumary';
-import axios from '../../axios-orders';
 import Spinner from '../../components/UI/Spinner/Spinner';
 import withErrorHandler from '../../hoc/withErrorHandler/withErrorHandler';
-import * as burgerBuilderActions from '../../store/actions/index';
+import * as actions from '../../store/actions/index';
 import { connect } from 'react-redux';
 
 class BurgerBuilder extends Component {
     state = {
-        purchasing: false,
-        loading: false,
-        error: false
+        purchasing: false
     };
 
     componentDidMount() {
-        // axios.get('https://react-burger-builder-d9d93.firebaseio.com/Ingredients.json')
-        //     .then(response => {
-        //         this.setState({ ingredients: response.data });
-        //     })
-        //     .catch(error => {
-        //         this.setState({ error: true });
-        //     });
+        this.props.initIngredients();
     }
 
     updatePurchasable(ingredients) {
@@ -33,37 +25,6 @@ class BurgerBuilder extends Component {
             .reduce((sum, e) => { return sum + e }, 0);
         return sum > 0;
     }
-
-    addIngredient = (type) => {
-        // const oldIngredientCount = this.props.ingredients[type];
-        // const updatedCount = oldIngredientCount + 1;
-        // const updatedIngredients = { ...this.props.ingredients };
-        // updatedIngredients[type] = updatedCount;
-        // const priceAddition = INGREDIENT_PRICES[type];
-        // const updatedPrice = this.state.totalPrice + priceAddition;
-        // this.setState({
-        //     totalPrice: updatedPrice,
-        //     ingredients: updatedIngredients
-        // });
-        // this.updatePurchasable(updatedIngredients);
-    }
-
-    // removeIngredient = (type) => {
-    //     const oldIngredientCount = this.props.ingredients[type];
-    //     if (oldIngredientCount <= 0) {
-    //         return;
-    //     }
-    //     const updatedCount = oldIngredientCount - 1;
-    //     const updatedIngredients = { ...this.props.ingredients };
-    //     updatedIngredients[type] = updatedCount;
-    //     const priceDeduction = INGREDIENT_PRICES[type];
-    //     const updatedPrice = this.state.totalPrice - priceDeduction;
-    //     this.setState({
-    //         totalPrice: updatedPrice,
-    //         ingredients: updatedIngredients
-    //     });
-    //     this.updatePurchasable(updatedIngredients);
-    // }
 
     purchaseHandler = () => {
         this.setState({ purchasing: true });
@@ -74,16 +35,13 @@ class BurgerBuilder extends Component {
     }
 
     purchaseContinueHandler = () => {
+        this.props.initPurchase();
         this.props.history.push('/checkout');
     }
 
     render() {
-        let burgerLayout = this.state.error ? <h2> Error loading ingredients!!</h2> : <Spinner />;
+        let burgerLayout = this.props.error ? <h2> Error loading ingredients!!</h2> : <Spinner />;
         let orderSummary = null;
-
-        if (this.state.loading) {
-            orderSummary = <Spinner />;
-        }
 
         if (this.props.ingredients) {
             const disabledInfo = { ...this.props.ingredients };
@@ -124,15 +82,18 @@ class BurgerBuilder extends Component {
 
 const mapStateToProps = state => {
     return {
-        ingredients: state.ingredients,
-        totalPrice: state.totalPrice
+        ingredients: state.burgerBuilder.ingredients,
+        totalPrice: state.burgerBuilder.totalPrice,
+        error: state.burgerBuilder.error
     };
 }
 
 const mapDispatchToProps = dispatch => {
     return {
-        addIngredient: (ingName) => dispatch(burgerBuilderActions.addIngredient(ingName)),
-        removeIngredient: (ingName) => dispatch(burgerBuilderActions.removeIngredient(ingName))
+        addIngredient: (ingName) => dispatch(actions.addIngredient(ingName)),
+        removeIngredient: (ingName) => dispatch(actions.removeIngredient(ingName)),
+        initIngredients: () => dispatch(actions.initIngredients()),
+        initPurchase: () => dispatch(actions.purchaseInit())
     }
 }
 
