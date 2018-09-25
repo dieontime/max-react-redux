@@ -17,20 +17,35 @@ const reducer = (state = initialState, action) => {
             return {
                 ...state,
                 loading: true
-            }
+            };
         case actions.PURCHASE_BURGER_SUCCESS:
             const newOrder = {
                 ...action.payload.orderData,
                 id: action.payload.orderId
-            }
+            };
             return {
                 ...state,
                 loading: false,
                 purchased: true,
-                order: state.order.concat(newOrder)
+                orders: state.orders.concat(newOrder)
             };
         case actions.PURCHASE_BURGER_FAIL:
-        alert('failed');
+            return {
+                ...state,
+                loading: false
+            };
+        case actions.FETCH_ORDERS_START:
+            return {
+                ...state,
+                loading: true
+            };
+        case actions.FETCH_ORDERS_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                orders: action.payload
+            };
+        case actions.FETCH_ORDERS_FAIL:
             return {
                 ...state,
                 loading: false

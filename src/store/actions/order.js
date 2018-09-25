@@ -41,3 +41,51 @@ export const purchaseBurger = (orderData) => {
             });
     }
 }
+
+export const fetchOrderStart = () => {
+    return {
+        type: actions.FETCH_ORDERS_START
+    }
+}
+
+export const fetchOrderSuccess = (response) => {
+    return {
+        type: actions.FETCH_ORDERS_SUCCESS,
+        payload: response
+    }
+}
+
+export const fetchOrderFail = (error) => {
+    return {
+        type: actions.FETCH_ORDERS_FAIL,
+        payload: error
+    }
+}
+
+export const fetchOrders = () => {
+    return dispatch => {
+        dispatch(fetchOrderStart());
+        axios.get('/orders.json')
+            .then(response => {
+                let fetchedOrders = [];
+                for (let key in response.data) {
+                    let ingredients = [];
+                    for (let ing in response.data[key].ingredients) {
+                        ingredients.push({
+                            name: ing,
+                            amount: response.data[key].ingredients[ing]
+                        });
+                    }
+                    response.data[key].ingredients = ingredients;
+                    fetchedOrders.push({
+                        ...response.data[key],
+                        id: key
+                    });
+                }
+                dispatch(fetchOrderSuccess(fetchedOrders));
+            })
+            .catch(error => {
+                dispatch(fetchOrderFail(error));
+            })
+    }
+}

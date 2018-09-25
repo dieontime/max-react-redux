@@ -107,7 +107,8 @@ class ContactData extends Component {
         const order = {
             ingredients: ingredients,
             price: price,
-            orderData: formData
+            orderData: formData,
+            purchaseDate: new Date()
         };
 
         this.props.onOrderBurger(order);
@@ -146,7 +147,7 @@ class ContactData extends Component {
         return isValid;
     }
     render() {
-        const formElementsArray = [];
+        let formElementsArray = [];
         for (let key in this.state.orderForm) {
             const element = this.state.orderForm[key];
             formElementsArray.push(
